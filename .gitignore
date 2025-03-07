@@ -1,0 +1,36 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Expo build artifacts
+.expo/
+.expo-shared/
+web-build/
+dist/
+build/
+*.log
+
+# Babel and Metro bundler cache
+.babelrc
+.metro-cache/
+.cache/
+
+# Environment files (secrets & API keys)
+.env*
+!.env.example
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE settings
+.vscode/
+.idea/
+*.swp
+
+# Generated files
+package-lock.json
+yarn.lock
+
