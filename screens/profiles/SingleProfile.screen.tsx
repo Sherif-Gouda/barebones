@@ -12,6 +12,7 @@ import PetCard from "./components/PetCard";
 import MonthSummary from "./components/MonthSummary";
 import HealthStatus from "./components/HealthStatus";
 import LogsTable from "./components/LogsTable";
+import TabBar from "./components/TabSelector";
 
 type RootStackParamList = {
   SingleProfile: { id: string };
@@ -21,10 +22,10 @@ type Props = NativeStackScreenProps<RootStackParamList, "SingleProfile">;
 
 // Mock data for development
 const mockPet: Pet = {
-  id: '1',
-  name: 'Max',
-  species: 'Dog',
-  breed: 'Golden Retriever',
+  id: "1",
+  name: "Max",
+  species: "Dog",
+  breed: "Golden Retriever",
   age: 3,
   created_at: new Date().toISOString(),
   owner_id: "123",
@@ -33,8 +34,8 @@ const mockPet: Pet = {
     { id: "2", pet_id: "1", weight: 26.0, date: "2024-01-25T10:00:00Z" },
   ],
   logs_bodycondition: [
-    { id: '1', pet_id: '1', body_condition: "3", date: '2024-02-25T10:00:00Z' },
-    { id: '2', pet_id: '1', body_condition: "4", date: '2024-01-25T10:00:00Z' },
+    { id: "1", pet_id: "1", body_condition: "3", date: "2024-02-25T10:00:00Z" },
+    { id: "2", pet_id: "1", body_condition: "4", date: "2024-01-25T10:00:00Z" },
   ],
   logs_vet_visits: [],
 };
@@ -64,7 +65,11 @@ function getThisMonthLogs(
 
   return { latestBodyConditionLog, latestWeightLog };
 }
-
+const tabs = [
+  { key: "logs", tabName: "Weight Logs" },
+  { key: "condition", tabName: "Body Condition" },
+  { key: "visits", tabName: "Vet Visits" },
+];
 export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   const { id } = route.params;
   const [pet, setPet] = useState<Pet | null>(null);
@@ -76,7 +81,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
     latestBodyConditionLog: null,
     latestWeightLog: null,
   });
-
+  const [selectedTab, setSelectedTab] = useState<string>("logs");
   useEffect(() => {
     const fetchPet = async () => {
       try {
@@ -118,7 +123,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
       <MonthSummary {...thisMonthLogs} />
 
       <HealthStatus pet={pet} />
-
+      <TabBar tabs={tabs} selectedTab={selectedTab} onSelect={setSelectedTab} />
       <LogsTable
         weightLogs={pet.logs_weight}
         bodyConditionLogs={pet.logs_bodycondition}
