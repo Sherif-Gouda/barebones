@@ -6,7 +6,8 @@ const HealthStatus = ({ pet }: { pet: Pet }) => (
   <View style={styles.healthStatus}>
     <Text style={styles.tableHeader}>Health Status</Text>
     <Text>
-      Overall Health: {pet?.logs_weight.length > 3 ? "Good" : "Needs More Data"}
+      Overall Health:{" "}
+      {pet?.logs_weight?.length > 3 ? "Good" : "Needs More Data"}
     </Text>
     <Text>Last Vet Visit: 2 months ago</Text>
   </View>

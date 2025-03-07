@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Pet, BodyConditionLog, WeightLog } from "../../types";
+import { Pet, BodyConditionLog, WeightLog, LogType } from "../../types";
 import PetCard from "./components/PetCard";
 import MonthSummary from "./components/MonthSummary";
 import HealthStatus from "./components/HealthStatus";
@@ -37,7 +37,20 @@ const mockPet: Pet = {
     { id: "1", pet_id: "1", body_condition: "3", date: "2024-02-25T10:00:00Z" },
     { id: "2", pet_id: "1", body_condition: "4", date: "2024-01-25T10:00:00Z" },
   ],
-  logs_vet_visits: [],
+  logs_vet_visits: [
+    {
+      id: "1",
+      date: "2025-03-01T10:30:00Z",
+      notes: "Routine check-up. Vaccinations updated.",
+      pet_id: "1",
+    },
+    {
+      id: "2",
+      date: "2025-02-15T14:00:00Z",
+      notes: "Treated for minor ear infection. Prescribed ear drops.",
+      pet_id: "1",
+    },
+  ],
 };
 
 function getThisMonthLogs(
@@ -48,7 +61,7 @@ function getThisMonthLogs(
   const currentYear = new Date().getFullYear();
 
   const latestBodyConditionLog = logs_bodycondition
-    .filter(
+    ?.filter(
       (log) =>
         new Date(log.date).getMonth() === currentMonth &&
         new Date(log.date).getFullYear() === currentYear
@@ -56,7 +69,7 @@ function getThisMonthLogs(
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
   const latestWeightLog = logs_weight
-    .filter(
+    ?.filter(
       (log) =>
         new Date(log.date).getMonth() === currentMonth &&
         new Date(log.date).getFullYear() === currentYear
@@ -66,9 +79,9 @@ function getThisMonthLogs(
   return { latestBodyConditionLog, latestWeightLog };
 }
 const tabs = [
-  { key: "logs", tabName: "Weight Logs" },
-  { key: "condition", tabName: "Body Condition" },
-  { key: "visits", tabName: "Vet Visits" },
+  { key: "weight", tabName: "Weight Logs" },
+  { key: "body", tabName: "Body Condition" },
+  { key: "vet", tabName: "Vet Visits" },
 ];
 export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   const { id } = route.params;
@@ -81,7 +94,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
     latestBodyConditionLog: null,
     latestWeightLog: null,
   });
-  const [selectedTab, setSelectedTab] = useState<string>("logs");
+  const [selectedTab, setSelectedTab] = useState<LogType>("weight");
   useEffect(() => {
     const fetchPet = async () => {
       try {
@@ -127,6 +140,8 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
       <LogsTable
         weightLogs={pet.logs_weight}
         bodyConditionLogs={pet.logs_bodycondition}
+        vetVisitLogs={pet.logs_vet_visits}
+        logType={selectedTab}
       />
     </ScrollView>
   );
