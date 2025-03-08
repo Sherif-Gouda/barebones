@@ -172,6 +172,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
         bodyConditionLogs={pet.logs_bodycondition}
         vetVisitLogs={pet.logs_vet_visits}
         logType={selectedTab}
+        onAddVetVisit={() => {}}
       />
     </ScrollView>
   );

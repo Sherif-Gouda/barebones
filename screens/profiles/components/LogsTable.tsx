@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { WeightLog, BodyConditionLog, VetVisitLog, LogType } from "@/types";
 
 interface LogsTableProps {
@@ -7,6 +7,7 @@ interface LogsTableProps {
   bodyConditionLogs: BodyConditionLog[];
   vetVisitLogs: VetVisitLog[] | null; // Vet visit logs may be null
   logType: LogType;
+  onAddVetVisit: () => void;
 }
 
 // Type guards to identify the correct log type based on the selected tab
@@ -27,6 +28,7 @@ const LogsTable: React.FC<LogsTableProps> = ({
   bodyConditionLogs,
   vetVisitLogs,
   logType,
+  onAddVetVisit,
 }) => {
   let logsToDisplay: (WeightLog | BodyConditionLog | VetVisitLog)[] = [];
 
@@ -67,6 +69,12 @@ const LogsTable: React.FC<LogsTableProps> = ({
       ) : (
         <Text style={styles.noLogsText}>No logs available.</Text>
       )}
+      {/* Add Vet Visit button at the bottom */}
+      {logType === "vet" && (
+        <TouchableOpacity style={styles.addButton} onPress={onAddVetVisit}>
+          <Text style={styles.addButtonText}>+ Add New Vet Visit</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -95,6 +103,18 @@ const styles = StyleSheet.create({
   },
   notes: {
     maxWidth: "70%", // Prevents long notes from overlapping with the date
+  },
+  addButton: {
+    marginTop: 16,
+    backgroundColor: "#007AFF",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
