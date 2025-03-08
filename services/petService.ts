@@ -31,9 +31,20 @@ const mockPets: Pet[] = [
 
 export const petService = {
   async getPets(): Promise<Pet[]> {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return [...mockPets];
+    const { data, error } = await supabase.from("pets").select(
+      `
+        id, name, species, breed, age, created_at, owner_id,
+        logs_weight:weight_logs(*),
+        logs_bodycondition:body_condition_logs(*),
+        logs_vet_visits:vet_visit_logs(*)
+      `
+    );
+
+    if (error) {
+      throw new Error("Failed to fetch pets");
+    }
+
+    return data;
   },
 
   async getPetById(id: string): Promise<Pet | null> {
@@ -59,36 +70,49 @@ export const petService = {
     return data;
   },
 
-  async createPet(pet: Omit<Pet, "id" | "created_at">): Promise<Pet> {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const newPet: Pet = {
-      ...pet,
-      id: Math.random().toString(36).substr(2, 9),
-      created_at: new Date().toISOString(),
-    };
-    mockPets.push(newPet);
-    return newPet;
+  async createPet(
+    pet: Omit<
+      Pet,
+      | "id"
+      | "created_at"
+      | "logs_weight"
+      | "logs_bodycondition"
+      | "logs_vet_visits"
+    >
+  ): Promise<Pet> {
+    const { data, error } = await supabase
+      .from("pets")
+      .insert([pet])
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error("Failed to create pet");
+    }
+
+    return data;
   },
 
   async updatePet(id: string, updates: Partial<Pet>): Promise<Pet> {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const index = mockPets.findIndex((p) => p.id === id);
-    if (index === -1) {
-      throw new Error("Pet not found");
+    const { data, error } = await supabase
+      .from("pets")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error("Failed to update pet");
     }
-    mockPets[index] = { ...mockPets[index], ...updates };
-    return mockPets[index];
+
+    return data;
   },
 
   async deletePet(id: string): Promise<void> {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const index = mockPets.findIndex((p) => p.id === id);
-    if (index === -1) {
-      throw new Error("Pet not found");
+    const { error } = await supabase.from("pets").delete().eq("id", id);
+
+    if (error) {
+      throw new Error("Failed to delete pet");
     }
-    mockPets.splice(index, 1);
   },
 };
