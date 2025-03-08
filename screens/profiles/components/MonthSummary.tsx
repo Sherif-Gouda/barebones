@@ -11,7 +11,10 @@ const MonthSummary = ({
 }) => (
   <View style={styles.monthSummary}>
     <Text style={styles.tableHeader}>This Month's Summary</Text>
-    <Text>Latest Weight: {latestWeightLog?.weight || "No data"} kg</Text>
+    <Text>
+      Latest Weight:{" "}
+      {latestWeightLog?.weight ? `${latestWeightLog?.weight} kg` : "No data"}
+    </Text>
     <Text>
       Body Condition: {latestBodyConditionLog?.body_condition || "No data"}
     </Text>

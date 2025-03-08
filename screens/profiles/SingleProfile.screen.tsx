@@ -7,7 +7,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Pet, BodyConditionLog, WeightLog, LogType } from "../../types";
+import {
+  Pet,
+  BodyConditionLog,
+  WeightLog,
+  LogType,
+  VetVisitLog,
+} from "../../types";
 import PetCard from "./components/PetCard";
 import MonthSummary from "./components/MonthSummary";
 import HealthStatus from "./components/HealthStatus";
@@ -30,7 +36,7 @@ const mockPet: Pet = {
   created_at: new Date().toISOString(),
   owner_id: "123",
   logs_weight: [
-    { id: "1", pet_id: "1", weight: 25.5, date: "2024-02-25T10:00:00Z" },
+    { id: "1", pet_id: "1", weight: 25.5, date: "2025-03-25T10:00:00Z" },
     { id: "2", pet_id: "1", weight: 26.0, date: "2024-01-25T10:00:00Z" },
   ],
   logs_bodycondition: [
@@ -78,6 +84,15 @@ function getThisMonthLogs(
 
   return { latestBodyConditionLog, latestWeightLog };
 }
+function getLatestVetVisit(logs_vet_visits: VetVisitLog[] | null) {
+  // Check if logs_vet_visits is not null and has at least one entry
+  return logs_vet_visits?.length
+    ? // If there are vet visit logs, sort them in descending order by date
+      logs_vet_visits.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      )[0] // Return the most recent vet visit log (first item after sorting)
+    : null; // If there are no logs, return null
+}
 const tabs = [
   { key: "weight", tabName: "Weight Logs" },
   { key: "body", tabName: "Body Condition" },
@@ -95,6 +110,9 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
     latestWeightLog: null,
   });
   const [selectedTab, setSelectedTab] = useState<LogType>("weight");
+  const [latestVetVisit, setLatestVetVisit] = useState<VetVisitLog | null>(
+    null
+  );
   useEffect(() => {
     const fetchPet = async () => {
       try {
@@ -114,6 +132,8 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
       setThisMonthLogs(
         getThisMonthLogs(pet.logs_bodycondition, pet.logs_weight)
       );
+
+      setLatestVetVisit(getLatestVetVisit(pet.logs_vet_visits));
     }
   }, [pet]);
 
@@ -135,7 +155,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
 
       <MonthSummary {...thisMonthLogs} />
 
-      <HealthStatus pet={pet} />
+      <HealthStatus pet={pet} latestVetVisit={latestVetVisit} />
       <TabBar tabs={tabs} selectedTab={selectedTab} onSelect={setSelectedTab} />
       <LogsTable
         weightLogs={pet.logs_weight}
