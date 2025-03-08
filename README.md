@@ -120,4 +120,13 @@ Modify the pet profile screen to include:
 - Comment your code where necessary
 - Include error handling and loading states
 - Consider edge cases and data validation
-- Focus on code quality and user experience 
+- Focus on code quality and user experience
+
+## **Submission Updates**  
+
+### **New Dependencies**  
+- `@supabase/supabase-js` – Supabase client for database interactions.  
+  - `react-native-url-polyfill` & `@react-native-async-storage/async-storage` – Required dependencies for `supabase-js` in React Native.  
+
+### **Environment Variables**  
+Environment variables are now prefixed with `EXPO_PUBLIC_` due to Expo's updated handling of public env variables.
