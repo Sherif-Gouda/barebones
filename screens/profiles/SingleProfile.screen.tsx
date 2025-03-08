@@ -19,6 +19,7 @@ import MonthSummary from "./components/MonthSummary";
 import HealthStatus from "./components/HealthStatus";
 import LogsTable from "./components/LogsTable";
 import TabBar from "./components/TabSelector";
+import { petService } from "@/services/petService";
 
 type RootStackParamList = {
   SingleProfile: { id: string };
@@ -113,12 +114,21 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   const [latestVetVisit, setLatestVetVisit] = useState<VetVisitLog | null>(
     null
   );
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     const fetchPet = async () => {
       try {
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setPet(mockPet);
+        const pet = await petService.getPetById(id);
+        setPet(pet);
+        setError(null);
+      } catch (e) {
+        setPet(null);
+        // Narrow down the type of error before accessing `e.message`
+        if (e instanceof Error) {
+          setError(e.message); // Set the error state to the error message
+        } else {
+          setError("Something wrong happened."); // Handle non-Error types
+        }
       } finally {
         setLoading(false);
       }
@@ -144,7 +154,7 @@ export const SingleProfileScreen: React.FC<Props> = ({ route }) => {
   if (!pet) {
     return (
       <View style={styles.container}>
-        <Text>Pet not found</Text>
+        <Text>{error}</Text>
       </View>
     );
   }
